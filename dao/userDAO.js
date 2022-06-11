@@ -16,6 +16,7 @@ module.exports = {
         .select()
         .where({
           username: user.username,
+          active: true,
         })
         .from("users");
       console.log(userdata[0]);
@@ -26,7 +27,9 @@ module.exports = {
       const groupdata = await database("groups")
         .join("user_groups", "groups.id", "=", "user_groups.group_id")
         .select("groups.id", "groups.name")
-        .where("user_groups.user_id", userdata[0].id);
+        .where("user_groups.user_id", userdata[0].id)
+        .andWhere("groups.active", true)
+        .andWhere("user_groups.active", true);
       console.log("groupdata", groupdata);
       const groups = groupdata.map((group) => group.id);
       console.log("groups", groups);
@@ -42,7 +45,8 @@ module.exports = {
           "tasks.completed",
           "tasks.archived"
         )
-        .where((builder) => builder.whereIn("group_tasks.group_id", groups));
+        .where((builder) => builder.whereIn("group_tasks.group_id", groups))
+        .andWhere("tasks.active", true);
       console.log("taskdata", taskdata);
       return {
         id: userdata[0].id,
@@ -90,10 +94,18 @@ module.exports = {
 
   updateUser: async (id, value) => {
     try {
-      const userdata = await database.select().where("id", id).from("users");
-      if (userdata.length === 0 && userdata[0].active)
+      const userdata = await database
+        .select()
+        .where({
+          id: id,
+          active: true,
+        })
+        .from("users");
+      if (userdata.length === 0)
         return { status: "User non-existant", code: 404 };
-      await database("users").where("id", id).update({...value, "modified_on": new Date()});
+      await database("users")
+        .where("id", id)
+        .update({ ...value, modified_on: new Date() });
       return { status: "User updated successful", code: 200 };
     } catch (error) {
       return { status: "Database error", code: 500 };
