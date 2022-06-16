@@ -1,14 +1,18 @@
-# digital-notebook-be
-Digital Notebook's server side code
+# Digital Notebook
 
-Create knexfile.js
-./node_modules/.bin/knex init
+# backend
 
-Create a migration
-npx knex migrate:make migration_name
+## Project Setup
+```
+npm install
+```
 
-Run migrations
+### Compiles and hot-reloads for development
+```
+npm run serve
+```
+
+### Setup Tables for Database
+```
 npx knex migrate:latest
-
-Rollback
-npx knex migrate:rollback
+```

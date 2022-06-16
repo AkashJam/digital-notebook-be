@@ -18,8 +18,8 @@ module.exports = {
         .andWhere("user_groups.active", true);
       if (userdata.length === 0)
         return { status: "User non-existant", code: 404 };
-      console.log(userdata)
-      return userdata;
+      console.log(userdata);
+      return { status: "Users found", code: 200, user: userdata };
     } catch (error) {
       return { status: "Database error", code: 500 };
     }
@@ -35,9 +35,9 @@ module.exports = {
         return { status: "User non-existant", code: 404 };
       const groupdata = await database
         .select()
-        .where({user_id: userdata[0].id, group_id: id, active: true })
+        .where({ user_id: userdata[0].id, group_id: id, active: true })
         .from("user_groups");
-      console.log(groupdata)
+      console.log(groupdata);
       if (groupdata.length !== 0)
         return { status: "User already in group", code: 406 };
       user_group.user_id = userdata[0].id;
@@ -113,13 +113,13 @@ module.exports = {
         return { status: "User non-existant", code: 404 };
       const groupdata = await database
         .select()
-        .where({user_id: userdata[0].id, group_id: id, active: true })
+        .where({ user_id: userdata[0].id, group_id: id, active: true })
         .from("user_groups");
-      console.log(groupdata)
+      console.log(groupdata);
       if (groupdata.length === 0)
         return { status: "User not member of group", code: 404 };
       await database("user_groups")
-        .where({user_id: userdata[0].id, group_id: id, active: true })
+        .where({ user_id: userdata[0].id, group_id: id, active: true })
         .update({ ...value, modified_on: new Date() });
       return { status: "Group member updated successful", code: 200 };
     } catch (error) {
